@@ -138,6 +138,10 @@ int main()
         window.close();
     }
 
+    sf::sleep(sf::seconds(1));
+    cout << "sleeo" << endl;
+    for(int i=0; i < 10; i++)
+      sim_grid(rand()%gridsize, rand()%gridsize) = rand()%2;
 
     // sim_grid(9,9) = 1;
     // sim_grid(0,9) = 1;
