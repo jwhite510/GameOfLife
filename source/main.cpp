@@ -100,7 +100,72 @@ void draw_grid(array2d &sim_grid, PixelGrid &pixelgrid)
   // sim_grid.rows
   // sim_grid.cols
 }
+void game_of_life_step(array2d &sim_grid, array2d &countgrid)
+{
+  // zero the count grid
+  for(int i=0; i < countgrid.rows; i++)
+    for(int j=0; j < countgrid.cols; j++)
+      countgrid(i,j) = 0;
 
+
+  // count neighbors of each cell
+  cout << "++++++++++++++++++++" << endl;
+  cout << "count neighbors:" << endl;
+  for(int i=0; i < sim_grid.rows; i++) {
+    for(int j=0; j < sim_grid.cols; j++) {
+      cout << sim_grid(i,j) << "  ";
+    }
+    cout << endl;
+  }
+
+  // count the number of neighbors
+  for(int i=0; i < sim_grid.rows; i++) {
+    for(int j=0; j < sim_grid.cols; j++) {
+
+      // count the rows on left and right
+      if(j==0 || j==sim_grid.cols-1) {
+        if(i!=0 && i!=sim_grid.rows-1)
+          countgrid(i,j) = 99;
+      }
+
+      // count the rows on top and bottom
+      if(i==0 || i==sim_grid.rows-1) {
+        if(j!=0 && j!=sim_grid.cols-1)
+          countgrid(i,j) = 98;
+      }
+
+      // count the corners
+      if(i==0 && j==0) {
+        countgrid(i,j) = 50;
+      }
+      if(i==sim_grid.rows-1 && j==sim_grid.cols-1) {
+        countgrid(i,j) = 51;
+      }
+      if(i==sim_grid.rows-1 && j==0) {
+        countgrid(i,j) = 52;
+      }
+      if(i==0 && j==sim_grid.cols-1) {
+        countgrid(i,j) = 53;
+      }
+
+
+
+    }
+  }
+
+  cout << "--------------------" << endl;
+
+
+  // count
+  for(int i=0; i < countgrid.rows; i++) {
+    for(int j=0; j < countgrid.cols; j++) {
+      cout << countgrid(i,j) << "  ";
+    }
+    cout << endl;
+  }
+
+
+}
 int main()
 {
 
@@ -109,7 +174,7 @@ int main()
   // number of pixels for with and height
   const int W = 600;
   // number of grid points
-  const int gridsize = 10;
+  const int gridsize = 5;
   PixelGrid pixelgrid(W,W);
   sf::Texture texture;
   texture.create(W,W);
@@ -118,6 +183,7 @@ int main()
 
   // game gridspace
   array2d sim_grid(gridsize, gridsize);
+  array2d countgrid(gridsize, gridsize);
   for(int i=0; i < gridsize; i++)
     for(int j=0; j < gridsize; j++)
       sim_grid(i,j) = 0;
@@ -140,8 +206,9 @@ int main()
 
     sf::sleep(sf::seconds(1));
     cout << "sleeo" << endl;
-    for(int i=0; i < 10; i++)
-      sim_grid(rand()%gridsize, rand()%gridsize) = rand()%2;
+    // for(int i=0; i < 10; i++)
+      // sim_grid(rand()%gridsize, rand()%gridsize) = rand()%2;
+    game_of_life_step(sim_grid, countgrid);
 
     // sim_grid(9,9) = 1;
     // sim_grid(0,9) = 1;
