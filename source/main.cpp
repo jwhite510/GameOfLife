@@ -67,19 +67,25 @@ void draw_grid(array2d &sim_grid, PixelGrid &pixelgrid)
   int pixelcol = 0;
   int grid_col_i = 0;
   int grid_row_i = 0;
-
-  int i=0;
-  for(int j=0; j < pixelgrid.W; j++) {
-    pixelgrid(i,j,0) = 255;
-    pixelgrid(i,j,1) = 255;
-    pixelgrid(i,j,2) = 255;
-    pixelgrid(i,j,3) = 255*sim_grid(0,grid_row_i);
-    if(pixelrow > pixels_per_simgrid)
-    {
-      // increment grid index
+  // for each row
+  for(int i=0; i < pixelgrid.W; i++) {
+    grid_col_i = 0;
+    pixelcol = 0;
+    for(int j=0; j < pixelgrid.W; j++) {
+      pixelgrid(i,j,0) = 0;
+      pixelgrid(i,j,1) = 0;
+      pixelgrid(i,j,2) = 255;
+      pixelgrid(i,j,3) = 255*sim_grid(grid_row_i,grid_col_i);
+      // pixelgrid(i,j,3) = value;
+      if(pixelcol > pixels_per_simgrid) {
+        // increment grid index
+        pixelcol = 0;
+        grid_col_i++;
+      }
+      pixelcol++;
+    }
+    if(pixelrow > pixels_per_simgrid) {
       pixelrow = 0;
-      std::cout << "pixels_per_simgrid" << " => " << pixels_per_simgrid << std::endl;
-      std::cout << "grid_row_i" << " => " << grid_row_i << std::endl;
       grid_row_i++;
     }
     pixelrow++;
@@ -116,10 +122,12 @@ int main()
     for(int j=0; j < gridsize; j++)
       sim_grid(i,j) = 0;
 
-  sim_grid(0,1) = 1;
-  sim_grid(0,3) = 1;
-  sim_grid(0,5) = 1;
-  sim_grid(0,7) = 1;
+  sim_grid(9,9) = 1;
+  sim_grid(0,0) = 1;
+  sim_grid(2,0) = 1;
+  sim_grid(9,0) = 1;
+  sim_grid(7,0) = 1;
+  sim_grid(5,0) = 1;
 
   // print the sim_grid
   for(int i=0; i < gridsize; i++) {
