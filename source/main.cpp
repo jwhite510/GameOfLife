@@ -77,14 +77,14 @@ void draw_grid(array2d &sim_grid, PixelGrid &pixelgrid)
       pixelgrid(i,j,2) = 255;
       pixelgrid(i,j,3) = 255*sim_grid(grid_row_i,grid_col_i);
       // pixelgrid(i,j,3) = value;
-      if(pixelcol > pixels_per_simgrid) {
+      if(pixelcol >= pixels_per_simgrid) {
         // increment grid index
         pixelcol = 0;
         grid_col_i++;
       }
       pixelcol++;
     }
-    if(pixelrow > pixels_per_simgrid) {
+    if(pixelrow >= pixels_per_simgrid) {
       pixelrow = 0;
       grid_row_i++;
     }
@@ -107,7 +107,7 @@ int main()
   cout << "game of life?" << endl;
 
   // number of pixels for with and height
-  const int W = 200;
+  const int W = 600;
   // number of grid points
   const int gridsize = 10;
   PixelGrid pixelgrid(W,W);
@@ -122,24 +122,12 @@ int main()
     for(int j=0; j < gridsize; j++)
       sim_grid(i,j) = 0;
 
-  sim_grid(9,9) = 1;
-  sim_grid(0,0) = 1;
-  sim_grid(2,0) = 1;
-  sim_grid(9,0) = 1;
-  sim_grid(7,0) = 1;
-  sim_grid(5,0) = 1;
 
-  // print the sim_grid
-  for(int i=0; i < gridsize; i++) {
-    for(int j=0; j < gridsize; j++) {
-      cout << sim_grid(i,j) << " ";
-    }
-    cout << endl;
-  }
-
-  // draw grid
-  draw_grid(sim_grid, pixelgrid);
-
+    // populate the grid with random values
+  srand(time(0));
+  for(int i=0; i < 10; i++)
+    sim_grid(rand()%gridsize, rand()%gridsize) = 1;
+  // add initial population to grid
 
   while(window.isOpen())
   {
@@ -149,13 +137,21 @@ int main()
       if (event.type == sf::Event::Closed)
         window.close();
     }
-    // for(int i=0; i < W; i++)
-      // for(int j=0; j < W; j++) {
-        // pixelgrid(i,j,0) = 255;
-        // pixelgrid(i,j,1) = 0;
-        // pixelgrid(i,j,2) = 0;
-        // pixelgrid(i,j,3) = 255;
-      // }
+
+
+    // sim_grid(9,9) = 1;
+    // sim_grid(0,9) = 1;
+    // sim_grid(0,0) = 1;
+    // sim_grid(3,2) = 1;
+    // sim_grid(3,4) = 1;
+    // sim_grid(3,6) = 1;
+    // sim_grid(9,0) = 1;
+    // sim_grid(9,0) = 1;
+
+
+    draw_grid(sim_grid, pixelgrid);
+
+
     texture.update(pixelgrid.pixels);
     window.clear();
     window.draw(sprite);
