@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <chrono>
 
 using namespace std;
 
@@ -89,12 +90,7 @@ void draw_grid(array2d &sim_grid, PixelGrid &pixelgrid)
       grid_row_i++;
     }
     pixelrow++;
-
   }
-
-
-
-
   // pixelgrid.W
   // pixelgrid.H
   // sim_grid.rows
@@ -106,18 +102,6 @@ void game_of_life_step(array2d &sim_grid, array2d &countgrid)
   for(int i=0; i < countgrid.rows; i++)
     for(int j=0; j < countgrid.cols; j++)
       countgrid(i,j) = 0;
-
-
-  // count neighbors of each cell
-  cout << "++++++++++++++++++++" << endl;
-  cout << "count neighbors:" << endl;
-  for(int i=0; i < sim_grid.rows; i++) {
-    for(int j=0; j < sim_grid.cols; j++) {
-      cout << sim_grid(i,j) << "  ";
-    }
-    cout << endl;
-  }
-
   // count the number of neighbors
   for(int i=0; i < sim_grid.rows; i++) {
     for(int j=0; j < sim_grid.cols; j++) {
@@ -132,24 +116,8 @@ void game_of_life_step(array2d &sim_grid, array2d &countgrid)
               countgrid(i,j) +=sim_grid(_i,_j);
         }
       }
-
-
     }
   }
-
-  cout << "--------------------" << endl;
-
-
-  // count
-  for(int i=0; i < countgrid.rows; i++) {
-    for(int j=0; j < countgrid.cols; j++) {
-      cout << countgrid(i,j) << "  ";
-    }
-    cout << endl;
-  }
-
-  cout << "--------------------" << endl;
-  cout << "next iteration" << endl;
   for(int i=0; i < sim_grid.rows; i++) {
     for(int j=0; j < sim_grid.cols; j++) {
 
@@ -185,7 +153,6 @@ void game_of_life_step(array2d &sim_grid, array2d &countgrid)
   for(int i=0; i < sim_grid.rows; i++)
     for(int j=0; j < sim_grid.cols; j++)
       sim_grid(i,j) = countgrid(i,j);
-
 }
 int main()
 {
@@ -193,9 +160,9 @@ int main()
   cout << "game of life?" << endl;
 
   // number of pixels for with and height
-  const int W = 600;
+  const int W = 1000;
   // number of grid points
-  const int gridsize = 5;
+  const int gridsize = 100;
   PixelGrid pixelgrid(W,W);
   sf::Texture texture;
   texture.create(W,W);
@@ -207,15 +174,39 @@ int main()
   array2d countgrid(gridsize, gridsize);
   for(int i=0; i < gridsize; i++)
     for(int j=0; j < gridsize; j++)
-      sim_grid(i,j) = 0;
+      sim_grid(i,j) = 0; // initialize to 0
 
+  // // blinker
+  // sim_grid(4,4) = 1;
+  // sim_grid(5,4) = 1;
+  // sim_grid(3,4) = 1;
 
-    // populate the grid with random values
+  // // beacon
+  // sim_grid(10,10) = 1;
+  // sim_grid(10,11) = 1;
+  // sim_grid(11,11) = 1;
+  // sim_grid(11,10) = 1;
+  // // =====
+  // sim_grid(12,12) = 1;
+  // sim_grid(12,13) = 1;
+  // sim_grid(13,13) = 1;
+  // sim_grid(13,12) = 1;
+
+  // populate the grid with random values
   srand(time(0));
-  for(int i=0; i < 10; i++)
+  for(int i=0; i < 10000; i++)
     sim_grid(rand()%gridsize, rand()%gridsize) = 1;
   // add initial population to grid
 
+
+  // populate corners
+  // sim_grid(gridsize-1, gridsize-1) = 1;
+  // sim_grid(0, gridsize-1) = 1;
+  // sim_grid(gridsize-1, 0) = 1;
+  // sim_grid(0, 0) = 1;
+
+  auto draw_time = chrono::high_resolution_clock::now();
+  int update_time_ms = 100;
   while(window.isOpen())
   {
     sf::Event event;
@@ -225,25 +216,15 @@ int main()
         window.close();
     }
 
-    sf::sleep(sf::seconds(1));
-    cout << "sleeo" << endl;
-    // for(int i=0; i < 10; i++)
-      // sim_grid(rand()%gridsize, rand()%gridsize) = rand()%2;
-    game_of_life_step(sim_grid, countgrid);
+    // cout << time(0) << endl;
+    // sf::sleep(sf::seconds(0.1));
 
-    // sim_grid(9,9) = 1;
-    // sim_grid(0,9) = 1;
-    // sim_grid(0,0) = 1;
-    // sim_grid(3,2) = 1;
-    // sim_grid(3,4) = 1;
-    // sim_grid(3,6) = 1;
-    // sim_grid(9,0) = 1;
-    // sim_grid(9,0) = 1;
-
+    if(chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now()-draw_time).count()>update_time_ms) {
+      draw_time = chrono::high_resolution_clock::now();
+      game_of_life_step(sim_grid, countgrid);
+    }
 
     draw_grid(sim_grid, pixelgrid);
-
-
     texture.update(pixelgrid.pixels);
     window.clear();
     window.draw(sprite);
