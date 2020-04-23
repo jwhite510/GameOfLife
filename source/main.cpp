@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <chrono>
+#include <math.h>
 
 using namespace std;
 
@@ -58,7 +59,7 @@ struct PixelGrid
   }
 };
 
-void draw_grid(array2d &sim_grid, PixelGrid &pixelgrid)
+void draw_grid(array2d &sim_grid, PixelGrid &pixelgrid, float &scalar)
 {
   // how many pixels are 1 simgrid
   int pixels_per_simgrid = pixelgrid.W / sim_grid.rows;
@@ -73,9 +74,9 @@ void draw_grid(array2d &sim_grid, PixelGrid &pixelgrid)
     grid_col_i = 0;
     pixelcol = 0;
     for(int j=0; j < pixelgrid.W; j++) {
-      pixelgrid(i,j,0) = 0;
-      pixelgrid(i,j,1) = 0;
-      pixelgrid(i,j,2) = 255;
+      pixelgrid(i,j,0) = ((float)j/pixelgrid.W)*255;
+      pixelgrid(i,j,1) = ((float)i/pixelgrid.W)*255;
+      pixelgrid(i,j,2) = scalar*255;
       pixelgrid(i,j,3) = 255*sim_grid(grid_row_i,grid_col_i);
       // pixelgrid(i,j,3) = value;
       if(pixelcol >= pixels_per_simgrid) {
@@ -205,6 +206,7 @@ int main()
   // sim_grid(gridsize-1, 0) = 1;
   // sim_grid(0, 0) = 1;
 
+  auto start_time = chrono::high_resolution_clock::now();
   auto draw_time = chrono::high_resolution_clock::now();
   int update_time_ms = 100;
   while(window.isOpen())
@@ -224,7 +226,13 @@ int main()
       game_of_life_step(sim_grid, countgrid);
     }
 
-    draw_grid(sim_grid, pixelgrid);
+    // calculate scalar
+    float cosval = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now()-start_time).count();
+    cosval = cos(cosval*0.003);
+    cosval += 1;
+    cosval /= 2;
+
+    draw_grid(sim_grid, pixelgrid, cosval);
     texture.update(pixelgrid.pixels);
     window.clear();
     window.draw(sprite);
