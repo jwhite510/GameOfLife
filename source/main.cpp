@@ -122,32 +122,16 @@ void game_of_life_step(array2d &sim_grid, array2d &countgrid)
   for(int i=0; i < sim_grid.rows; i++) {
     for(int j=0; j < sim_grid.cols; j++) {
 
-      // count the rows on left and right
-      if(j==0 || j==sim_grid.cols-1) {
-        if(i!=0 && i!=sim_grid.rows-1)
-          countgrid(i,j) = 99;
+      // count the number of neighbors
+      for(int _i=i-1; _i <=i+1; _i++) {
+        for(int _j=j-1; _j <=j+1; _j++) {
+          if(_i==i && _j==j)
+            continue;
+          if(_i >= 0 && _i<sim_grid.rows)
+            if(_j >= 0 && _j<sim_grid.cols)
+              countgrid(i,j) +=sim_grid(_i,_j);
+        }
       }
-
-      // count the rows on top and bottom
-      if(i==0 || i==sim_grid.rows-1) {
-        if(j!=0 && j!=sim_grid.cols-1)
-          countgrid(i,j) = 98;
-      }
-
-      // count the corners
-      if(i==0 && j==0) {
-        countgrid(i,j) = 50;
-      }
-      if(i==sim_grid.rows-1 && j==sim_grid.cols-1) {
-        countgrid(i,j) = 51;
-      }
-      if(i==sim_grid.rows-1 && j==0) {
-        countgrid(i,j) = 52;
-      }
-      if(i==0 && j==sim_grid.cols-1) {
-        countgrid(i,j) = 53;
-      }
-
 
 
     }
