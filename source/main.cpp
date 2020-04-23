@@ -148,6 +148,43 @@ void game_of_life_step(array2d &sim_grid, array2d &countgrid)
     cout << endl;
   }
 
+  cout << "--------------------" << endl;
+  cout << "next iteration" << endl;
+  for(int i=0; i < sim_grid.rows; i++) {
+    for(int j=0; j < sim_grid.cols; j++) {
+
+      int cell_alive = sim_grid(i,j)==1;
+      int two_or_three_neighbors = countgrid(i,j) == 2 || countgrid(i,j) == 3;
+      int three_live_neighbors = countgrid(i,j) == 3;
+
+      // any live cell with two or three live neighbors survives
+      // ======================================================
+      if(cell_alive && two_or_three_neighbors) // if cell is alive
+      {
+        countgrid(i,j) = 1; // cell lives
+      }
+      // any dead cell with three live neighbors becomes a live cell
+      // ======================================================
+      else if(!cell_alive && three_live_neighbors)
+      {
+        countgrid(i,j)=1;
+      }
+      // all other live cells die in the next generation
+      // ======================================================
+      else if(cell_alive)
+      {
+        countgrid(i,j)=0;
+      }
+      // all other dead cells stay dead
+      else if(!cell_alive)
+      {
+        countgrid(i,j)=0;
+      }
+    }
+  }
+  for(int i=0; i < sim_grid.rows; i++)
+    for(int j=0; j < sim_grid.cols; j++)
+      sim_grid(i,j) = countgrid(i,j);
 
 }
 int main()
